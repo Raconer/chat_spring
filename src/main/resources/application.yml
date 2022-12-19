@@ -5,14 +5,14 @@ server:
             init-parameters:
                 development: true
 spring:
+    freemarker:
+        cache: false
     devtools:
         add-properties: false
         livereload:
             enabled: true 
     mvc:
+        static-path-pattern: /resources/**
         view:
             prefix: /WEB-INF/views/
             suffix: .jsp
-
-
-
