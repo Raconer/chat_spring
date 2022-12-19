@@ -1,0 +1,18 @@
+server:
+    port: 8080
+    servlet:
+        jsp:
+            init-parameters:
+                development: true
+spring:
+    devtools:
+        add-properties: false
+        livereload:
+            enabled: true 
+    mvc:
+        view:
+            prefix: /WEB-INF/views/
+            suffix: .jsp
+
+
+
