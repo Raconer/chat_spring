@@ -17,6 +17,8 @@ repositories {
 dependencies {
 	// Spring Boot Web Server Dependency
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	// Spring Web Socket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	// Find Views Path
 	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper'
 	// Develop Tool
