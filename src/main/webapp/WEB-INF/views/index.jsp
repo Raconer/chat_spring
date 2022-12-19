@@ -72,7 +72,6 @@
             <input type='button' value='전송' id='btnSend'>
         </div>
     </div>
-    <!-- <script src='/static/js/chat.js'></script> -->
 </body>
 <script>
     /* 
