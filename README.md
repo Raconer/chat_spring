@@ -1,68 +1,44 @@
-# 채팅 만들기
+# 쓸만한 채팅 만들기
 
 ## 참고
 
-[참고 블로그](https://jobtc.tistory.com/59)
+[Terian의 IT 도전기](https://terianp.tistory.com/146)
+> 위의 블로그 내용에 따라 공부 하였습니다.
 
-## 채팅방 1개일때 만드는 법
+[pub/sub란?](https://cloud.google.com/pubsub/docs/overview?hl=ko)
 
-1. gradle 추가
+## 프로젝트 목표
+
+> 진짜 서비스 할수 있을 만큼의 채팅 서비스 만들기
+
+## 기본 개녕
+
+### STOMP
+
+> Simple Text Oriented Messaging Protocol의 약자로 메시지 전송을 위한 프로토콜이다.
+
+#### WebSocket과 다른점
+
+> **WebSocket 특징**
+> 기본적인 과 가장 크게 다른 점은 기존의 **WebSocket**만을 사용한 통신은 발신자와 수신자를 Spring단에서 직접 관리 해야만 했다.
+> 즉 `**WebSocketHandler**를 만들어서 **WebSocket**통신을 하는 **User**들을 **Map**으로 직접 관리를 하고
+> **Client**에서 들어오는 **Message**를 다른 **User**에게 전달하는 코드를 직접 구현해야 했다.
+
+> **STOMP 특징**
+> [**Pub/Sub**](https://cloud.google.com/pubsub/docs/overview?hl=ko) 기반으로 동작 하기 떄문에 메시지의 **전송/수신**에 대한 처리를 명확하게 정의 할수있다.
+> 즉. @MessagingMapping 같은 어노테이션을 사용하여 메시지 **전송/수신**을 처리 할수있다.
+> ****
+
+## Import Gradle
 
 ```gradle
-    // Spring Web Socket
+	// Spring Web Socket
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
+    // sockjs
+    implementation 'org.webjars:sockjs-client:1.1.2'
+
+    // stomp
+    implementation 'org.webjars:stomp-websocket:2.3.4'
 ```
 
-2. Chat Service 생성
-
-```java
-    @Slf4j
-    @Service
-    @ServerEndpoint("/chat")
-    public class ChatService {
-        private static Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
-
-        /*
-        * 1) onOpen 메서드
-        * 클라이언트가 ServerEndpoint값인 "/chat" url로 서버에 접속하게 되면 onOpen 메서드가 실행되며,
-        * 클라이언트 정보를 매개변수인 Session 객체를 통해 전달받습니다.
-        * 이때 정적 필드인 clients에 해당 session이 존재하지 않으면 clients에 접속된 클라이언트를 추가합니다.
-        */
-        @OnOpen
-        public void onOpen(Session session) {
-            log.info("Open Session : {}", session.toString());
-            if (clients.contains(session)) {
-                log.warn("Already Connect Session", session);
-            } else {
-                clients.add(session);
-                log.info("Session Ope : {}", session);
-            }
-        }
-
-        /*
-        * 2) onMessage 메서드
-        * 클라이언트로부터 메시지가 전달되면 WebSocketChat 클래스의 onMessage메서드에 의해 clients에 있는 모든
-        * session에 메시지를 전달합니다.
-        */
-        @OnMessage
-        public void onMessage(String msg, Session session) throws Exception {
-            log.info("Receive Message : {}", msg);
-            for (Session client : clients) {
-                log.info("Send Data : {}", msg);
-                client.getBasicRemote().sendText(msg);
-            }
-        }
-
-        /*
-        * 3) onClose 메서드
-        * 클라이언트가 url을 바꾸거나 브라우저를 종료하면 자동으로 onClose() 메서드가 실행되며 해당 클라이언트 정보를 clients에서
-        * 제거합니다.
-        */
-        @OnClose
-        public void onClose(Session session) {
-            log.info("Session Close : {}", session);
-            clients.remove(session);
-        }
-    }
-
-```

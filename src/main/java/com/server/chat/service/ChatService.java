@@ -1,64 +1,120 @@
 package com.server.chat.service;
 
+import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
-import javax.websocket.OnClose;
-import javax.websocket.OnMessage;
-import javax.websocket.OnOpen;
-import javax.websocket.Session;
-import javax.websocket.server.ServerEndpoint;
+import javax.annotation.PostConstruct;
 
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Repository;
 
-import lombok.extern.slf4j.Slf4j;
+import com.server.chat.dto.ChatRoomDTO;
 
-@Slf4j
-@Service
-@ServerEndpoint("/chat")
+@Repository
 public class ChatService {
-    private static Set<Session> clients = Collections.synchronizedSet(new HashSet<Session>());
 
-    /*
-     * 1) onOpen 메서드
-     * 클라이언트가 ServerEndpoint값인 "/chat" url로 서버에 접속하게 되면 onOpen 메서드가 실행되며,
-     * 클라이언트 정보를 매개변수인 Session 객체를 통해 전달받습니다.
-     * 이때 정적 필드인 clients에 해당 session이 존재하지 않으면 clients에 접속된 클라이언트를 추가합니다.
-     */
-    @OnOpen
-    public void onOpen(Session session) {
-        log.info("Open Session : {}", session.toString());
-        if (clients.contains(session)) {
-            log.warn("Already Connect Session", session);
-        } else {
-            clients.add(session);
-            log.info("Session Ope : {}", session);
-        }
+    private Map<String, ChatRoomDTO> chatRoomMap;
+    Random random;
+
+    @PostConstruct
+    private void init() {
+        this.chatRoomMap = new LinkedHashMap<>();
     }
 
-    /*
-     * 2) onMessage 메서드
-     * 클라이언트로부터 메시지가 전달되면 WebSocketChat 클래스의 onMessage메서드에 의해 clients에 있는 모든
-     * session에 메시지를 전달합니다.
-     */
-    @OnMessage
-    public void onMessage(String msg, Session session) throws Exception {
-        log.info("Receive Message : {}", msg);
-        for (Session client : clients) {
-            log.info("Send Data : {}", msg);
-            client.getBasicRemote().sendText(msg);
-        }
+    // CREATE
+
+    // RoomName으로 채팅방 만들기
+    public ChatRoomDTO createByName(String name) {
+        ChatRoomDTO chatRoom = new ChatRoomDTO().create(name);
+        this.chatRoomMap.put(chatRoom.getId(), chatRoom);
+        return chatRoom;
+    }
+    // READ
+
+    // 전체 채팅방 조회
+    public List<ChatRoomDTO> findAllRoom() {
+        List<ChatRoomDTO> chatRoomList = new ArrayList<>(this.chatRoomMap.values());
+        Collections.reverse(chatRoomList);
+        return chatRoomList;
     }
 
-    /*
-     * 3) onClose 메서드
-     * 클라이언트가 url을 바꾸거나 브라우저를 종료하면 자동으로 onClose() 메서드가 실행되며 해당 클라이언트 정보를 clients에서
-     * 제거합니다.
-     */
-    @OnClose
-    public void onClose(Session session) {
-        log.info("Session Close : {}", session);
-        clients.remove(session);
+    // Room ID 기준으로 채팅방 찾기
+    public ChatRoomDTO findRoomById(String id) {
+        return this.chatRoomMap.get(id);
+    }
+
+    // UPDATE
+
+    // 채팅방 인원 + 1
+    public void plusUserCnt(String id) {
+        ChatRoomDTO chatRoom = chatRoomMap.get(id);
+        chatRoom.setUserCnt(chatRoom.getUserCnt() + 1);
+    }
+
+    // 채팅방 인원 - 1
+    public void minusUserCnt(String id) {
+        ChatRoomDTO chatRoom = chatRoomMap.get(id);
+        chatRoom.setUserCnt(chatRoom.getUserCnt() - 1);
+    }
+
+    // 사용자
+
+    // CREATE
+
+    // 채팅방 User 리스트에 User 추가
+    public String addUser(String roomId, String userName) {
+        ChatRoomDTO chatRoom = this.chatRoomMap.get(roomId);
+        String userId = UUID.randomUUID().toString();
+
+        // 아이디 중복 확인 후 User List에 추가
+        chatRoom.getUserList().put(userId, userName);
+        return userId;
+    }
+
+    // READ
+    public String isDuplicateName(String roomId, String userName) {
+        ChatRoomDTO chatRoom = this.chatRoomMap.get(roomId);
+        String tmp = userName;
+
+        // 만약 UserName이 중복이라면 랜덤한 숫자를 붙임
+        // 이때 랜덤한 숫자를 붙였을 때 getUserlist 안에 있는 닉네임이라면 다시 랜덤한 숫자 붙이기!
+        while (chatRoom.getUserList().containsValue(tmp)) {
+            this.random = new SecureRandom();
+            int ranNum = random.nextInt(100);
+            tmp = userName + ranNum;
+        }
+
+        return tmp;
+    }
+
+    // DELETE
+    // 채팅방 User 리스트 삭제
+    public void delUser(String roomId, String userId) {
+        ChatRoomDTO chatRoom = this.chatRoomMap.get(roomId);
+        chatRoom.getUserList().remove(userId);
+    }
+
+    // 채팅방 userName 조회
+    public String getUserName(String roomId, String userId) {
+        ChatRoomDTO chatRoom = this.chatRoomMap.get(roomId);
+        return chatRoom.getUserList().get(userId);
+    }
+
+    // 채팅방 전체 UserList 조회
+    public List<String> getUserList(String roomId) {
+        List<String> list = new ArrayList<>();
+        ChatRoomDTO chatRoom = this.chatRoomMap.get(roomId);
+        // HashMap을 For문을 돌린 후
+        // value 값만 뽑아서 List에 저장 후 Return
+        chatRoom.getUserList().forEach((key, value) -> {
+            list.add(value);
+        });
+
+        return list;
     }
 }
