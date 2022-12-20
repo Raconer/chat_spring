@@ -1,46 +1,42 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" %>
 <!DOCTYPE html>
 <html>
-
 <head>
     <meta charset="UTF-8">
     <title>Insert title here</title>
     <style>
         @charset "UTF-8";
-    
         * {
             box-sizing: border-box;
         }
-    
-        #chatt {
+        #chat {
             width: 800px;
             margin: 20px auto;
         }
-    
-        #chatt #talk {
+        #chat #talk {
             width: 800px;
             height: 400px;
             overflow: scroll;
             border: 1px solid #aaa;
         }
     
-        #chatt #msg {
+        #chat #msg {
             width: 740px;
             height: 100px;
             display: inline-block;
         }
     
-        #chatt #sendZone>* {
+        #chat #sendZone>* {
             vertical-align: top;
     
         }
     
-        #chatt #btnSend {
+        #chat #btnSend {
             width: 54px;
             height: 100px;
         }
     
-        #chatt #talk div {
+        #chat #talk div {
             width: 70%;
             display: inline-block;
             padding: 6px;
@@ -48,21 +44,20 @@
     
         }
     
-        #chatt .me {
+        #chat .me {
             background-color: #ffc;
             margin: 1px 0px 2px 30%;
         }
     
-        #chatt .other {
+        #chat .other {
             background-color: #eee;
             margin: 2px;
         }
     </style>
 </head>
-
 <body>
     <div id='chat'>
-        <h1>WebSocket Chatting</h1>
+        <h1>WebSocket chating</h1>
         <input type='text' id='mid' value='홍길동'>
         <input type='button' value='로그인' id='btnLogin'>
         <br />

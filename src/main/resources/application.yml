@@ -16,3 +16,7 @@ spring:
         view:
             prefix: /WEB-INF/views/
             suffix: .jsp
+logging:
+    config: classpath:logback.xml
+
+            # org.apache.jasper.servlet.TldScanner.level = FINE

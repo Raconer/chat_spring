@@ -6,21 +6,21 @@ function getId(id) {
     return document.getElementById(id);
 }
 
-var data = {}; // 전송 데이터 (JSON);
+let data = {}; // 전송 데이터 (JSON);
 
-var ws;
-var mid = getId('mid');
-var btnLogin = getId('btnLogin');
-var btnSend = getId('btnSend');
-var talk = getId('talk');
-var msg = getId('msg');
+let ws;
+let mid = getId('mid');
+let btnLogin = getId('btnLogin');
+let btnSend = getId('btnSend');
+let talk = getId('talk');
+let msg = getId('msg');
 
 btnLogin.onclick = function() {
     ws = new WebSocket("ws://" + location.host + "/chat");
 	
 	ws.onmessage = function(msg){
-		var data = JSON.parse(msg.data);
-		var css;
+		let data = JSON.parse(msg.data);
+		let css;
 		
 		if(data.mid == mid.value){
 			css = 'class=me';
@@ -28,7 +28,7 @@ btnLogin.onclick = function() {
 			css = 'class=other';
 		}
 		
-		var item = `<div ${css} >
+		let item = `<div ${css} >
 		                <span><b>${data.mid}</b></span> [ ${data.date} ]<br/>
                       <span>${data.msg}</span>
 						</div>`;
@@ -53,7 +53,7 @@ function send(){
 		data.mid = getId('mid').value;
 		data.msg = msg.value;
 		data.date = new Date().toLocaleString();
-		var temp = JSON.stringify(data);
+		let temp = JSON.stringify(data);
 		ws.send(temp);
 	}
 	msg.value ='';
