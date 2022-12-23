@@ -19,6 +19,7 @@ import com.server.chat.dto.ChatDTO;
 import com.server.chat.service.ChatService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /* 
  * - 채팅을 수신/송신(pub.sub)하기 위한 Controller 
@@ -29,10 +30,11 @@ import lombok.RequiredArgsConstructor;
  * 이를 통해서 도착 지점 즉 sub되는 지점으로 인자를 들어온 객체를 Message객체로 변환해서 해당 도착지점을 Sub하고 있는 모든 사용자에게 메시지를 보내게 된다.
  * 
  */
-
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class ChatController {
+
 
     private final SimpMessageSendingOperations template;
 
@@ -56,12 +58,13 @@ public class ChatController {
         headerAccessor.getSessionAttributes().put("userId", userId);
         headerAccessor.getSessionAttributes().put("roomId", chatDTO.getRoomId());
 
-        chatDTO.setMessage(chatDTO.getUserName() + "님 입장!!");
+        chatDTO.setMessage(chatDTO.getUserName() + "님 입장!f!");
         template.convertAndSend("/sub/chat/room/" + chatDTO.getRoomId(), chatDTO);
 
     }
 
     // 해당 User
+
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chatDTO) {
         template.convertAndSend("/sub/chat/room" + chatDTO.getRoomId(), chatDTO);
@@ -73,6 +76,7 @@ public class ChatController {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
         // stomp 세션에 있던 uuid와 roomId를 확인해서 채팅방 User 리스트와 room에서 해당 User를 삭제
+
         String userId = (String) headerAccessor.getSessionAttributes().get("userId");
         String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
 
@@ -96,9 +100,11 @@ public class ChatController {
     }
 
     // 채팅에 참여한 User 리스트 반환
+
     @GetMapping("/chat/userList")
     @ResponseBody
     public List<String> userList(String roomId) {
+        log.info("Get User List");
         return this.chatService.getUserList(roomId);
     }
 
@@ -106,7 +112,9 @@ public class ChatController {
     @GetMapping("/chat/duplicateName")
     public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("userName") String userName) {
         // User 이름 확인
+        log.info("User Name Duplicate");
         userName = this.chatService.isDuplicateName(roomId, userName);
         return userName;
     }
+
 }

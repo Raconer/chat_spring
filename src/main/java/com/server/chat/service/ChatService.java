@@ -2,45 +2,34 @@ package com.server.chat.service;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.stereotype.Repository;
 
 import com.server.chat.dto.ChatRoomDTO;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Repository
 public class ChatService {
 
-    private Map<String, ChatRoomDTO> chatRoomMap;
+    private Map<String, ChatRoomDTO> chatRoomMap = new LinkedHashMap<>();
+
     Random random;
 
-    @PostConstruct
-    private void init() {
-        this.chatRoomMap = new LinkedHashMap<>();
-    }
+
 
     // CREATE
-
     // RoomName으로 채팅방 만들기
     public ChatRoomDTO createByName(String name) {
         ChatRoomDTO chatRoom = new ChatRoomDTO().create(name);
         this.chatRoomMap.put(chatRoom.getId(), chatRoom);
         return chatRoom;
-    }
-    // READ
-
-    // 전체 채팅방 조회
-    public List<ChatRoomDTO> findAllRoom() {
-        List<ChatRoomDTO> chatRoomList = new ArrayList<>(this.chatRoomMap.values());
-        Collections.reverse(chatRoomList);
-        return chatRoomList;
     }
 
     // Room ID 기준으로 채팅방 찾기
@@ -78,6 +67,7 @@ public class ChatService {
 
     // READ
     public String isDuplicateName(String roomId, String userName) {
+        log.info("Room Id : {}", roomId);
         ChatRoomDTO chatRoom = this.chatRoomMap.get(roomId);
         String tmp = userName;
 

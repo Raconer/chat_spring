@@ -10,13 +10,34 @@ spring:
     devtools:
         add-properties: false
         livereload:
-            enabled: true 
+            enabled: true
     mvc:
-        static-path-pattern: /resources/**
         view:
             prefix: /WEB-INF/views/
             suffix: .jsp
+    # DB
+    datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/chatting?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+        username: root
+        password: root
+        hikari:
+            connectionTimeout: 5000
+            validationTimeout: 1000
+            maximumPoolSize: 10
+    jpa:
+        show-sql: true
+        properties:
+            hibernate:
+                "[format_sql]": true
+        database: mysql
+        database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+# 로깅 레벨
 logging:
     config: classpath:logback.xml
-
-            # org.apache.jasper.servlet.TldScanner.level = FINE
+    level:
+        org:
+            hibernate: info
+            type:
+                descriptor:
+                    sql: TRACE
