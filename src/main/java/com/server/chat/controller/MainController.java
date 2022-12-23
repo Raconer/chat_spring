@@ -3,7 +3,7 @@ package com.server.chat.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.server.chat.service.ChatRoomService;
 
@@ -25,9 +25,9 @@ public class MainController {
         return "index";
     }
 
-    @GetMapping("/{id}")
-    public String detail(@PathVariable int id, Model model) {
-        log.info("Start Main");
+    @GetMapping("/room")
+    public String detail(@RequestParam int id, Model model) {
+        log.info("Start Detail : " + id);
         return "chatRoom";
     }
 

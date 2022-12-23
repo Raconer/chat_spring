@@ -41,52 +41,50 @@ public class ChatController {
     @Autowired
     ChatService chatService;
 
-    // MessageMapping을 통해 WebSocket으로 들어오는 메시지를 발신 처리 한다.
-    // 이때 클라이언트에서는 /pub/chat/message() 로 요청하게 되고 이것을 controller가 받아서 처리한다.
-    // 처리가 완료되면 /sub/chat/room/roomId로 메시지가 전송된다.
-
+    /**
+     * @param chatDTO
+     * @param headerAccessor
+     * @desc User 방에 입장ㅅ
+     */
     @MessageMapping("/chat/enterUser") // /pub/chat/enterUser 와 같다.("/pub" 생략)
     public void enterUser(@Payload ChatDTO chatDTO, SimpMessageHeaderAccessor headerAccessor) {
-        String roomId = chatDTO.getRoomId();
-        // 채팅방 User + 1
-        this.chatService.plusUserCnt(roomId);
-
-        // 채팅방 User 추가 및 UserUUID 반환
-        String userId = this.chatService.addUser(roomId, chatDTO.getUserName());
 
         // 반환 결과를 Socket Session에 UserUUID로 저장
-        headerAccessor.getSessionAttributes().put("userId", userId);
+        headerAccessor.getSessionAttributes().put("userId", chatDTO.getUserName());
         headerAccessor.getSessionAttributes().put("roomId", chatDTO.getRoomId());
+        headerAccessor.getSessionAttributes().put("userName", chatDTO.getUserName());
 
         chatDTO.setMessage(chatDTO.getUserName() + "님 입장!f!");
         template.convertAndSend("/sub/chat/room/" + chatDTO.getRoomId(), chatDTO);
 
     }
 
-    // 해당 User
+    /**
+     * @param chatDTO
+     * @deprecated 사용자 메시지 전송시
+     */
 
+    // * 메시지 Send => /pub/chat/message 로 요청
+    // * 처리가 완료시 /sub/chat/room/roomId로 메시지가 전송
     @MessageMapping("/chat/sendMessage")
     public void sendMessage(@Payload ChatDTO chatDTO) {
-        template.convertAndSend("/sub/chat/room" + chatDTO.getRoomId(), chatDTO);
+        log.info("CHAT {}", chatDTO);
+        chatDTO.setMessage(chatDTO.getMessage());
+        template.convertAndSend("/sub/chat/room/" + chatDTO.getRoomId(), chatDTO);
     }
 
-    // User 퇴장 시에는 EventListener을 통해서 User 퇴장을 확인
+    /**
+     * @param event
+     * @desc 사용자 퇴장시
+     */
+    @Deprecated
     @EventListener
     public void webSocketDisConnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 
-        // stomp 세션에 있던 uuid와 roomId를 확인해서 채팅방 User 리스트와 room에서 해당 User를 삭제
-
-        String userId = (String) headerAccessor.getSessionAttributes().get("userId");
         String roomId = (String) headerAccessor.getSessionAttributes().get("roomId");
-
-        // 채팅방 User -1
-        this.chatService.minusUserCnt(roomId);
-
-        // 채팅방 User리스트에서 UUID User 닉네임 조회 및 리스트 삭제
-        String userName = this.chatService.getUserName(roomId, userId);
-        this.chatService.delUser(roomId, userId);
-
+        // TODO 현재는 사용자 정보를 불러오지 않아 임시로 test로 처리 추후 퇴장한 사용자 정보를 받아 오는 처리가 필요하다.
+        String userName = (String) headerAccessor.getSessionAttributes().get("userName");
         if (userName != null) {
             ChatDTO chatDto = ChatDTO.builder()
                     .type(ChatDTO.MessageType.LEAVE)
@@ -94,27 +92,7 @@ public class ChatController {
                     .message(userName + "님 퇴장!!")
                     .build();
 
-            template.convertAndSend("/sub/shat/room/" + roomId, chatDto);
+            template.convertAndSend("/sub/chat/room/" + roomId, chatDto);
         }
-
     }
-
-    // 채팅에 참여한 User 리스트 반환
-
-    @GetMapping("/chat/userList")
-    @ResponseBody
-    public List<String> userList(String roomId) {
-        log.info("Get User List");
-        return this.chatService.getUserList(roomId);
-    }
-
-    // 채팅에 참여한 User닉네임 중복확인
-    @GetMapping("/chat/duplicateName")
-    public String isDuplicateName(@RequestParam("roomId") String roomId, @RequestParam("userName") String userName) {
-        // User 이름 확인
-        log.info("User Name Duplicate");
-        userName = this.chatService.isDuplicateName(roomId, userName);
-        return userName;
-    }
-
 }

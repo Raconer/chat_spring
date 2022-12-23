@@ -24,6 +24,9 @@ div.chat ul li.other {
     text-align: left;
 }
 
+div.chat ul li.notice {
+    text-align: center;
+}
 div.chat ul li.me {
     text-align: right;
 }
