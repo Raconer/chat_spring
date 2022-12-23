@@ -1,5 +1,3 @@
-'use strict';
-
 $(document).on("click", "#chatRoomAddBtn", () => {
     let name = document.getElementById("chatRoomName").value;
     if (!name) {

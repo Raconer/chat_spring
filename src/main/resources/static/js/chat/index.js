@@ -1,21 +1,26 @@
-let date = new Date();
+// 메시지 좌우 구분으로 인한 변수 설정
 let isSend = false;
+// 임시 사용자 이름
+let date = new Date();
 const userName = "user_" + date.getHours() + "-" + date.getMinutes() + "-" + date.getSeconds();
 
+// JS파일 존재시 실행
 $(document).ready(function () {
     connect();
 });
 
+// 메시지 전송 이벤트 
 $(document).on("click", "#message-submit", () => {
     sendMessage();
 });
-
+// STOMP 변수
 let stompClient = null;
 
 // Room Id 파라미터 가져오기
 const url = new URL(location.href).searchParams;
 const roomId = url.get("id");
 
+// STOMP로 연결한다.
 async function connect(event) {
     let socket = new SockJS("/ws-stomp");
     stompClient = await Stomp.over(socket);
@@ -24,6 +29,7 @@ async function connect(event) {
 
 }
 
+// STOMP로 roomId별 채팅방에 접근을 한다.
 async function onConnected() {
     let json = {
             roomId: roomId,
@@ -31,13 +37,11 @@ async function onConnected() {
             type : "ENTER"
         }
 
-    // SUB 할 url -> /sub/chat/room/roomId 로 구독한다.
-    // 모든 Receive처리는 onMessageReceived 여기서 처리한다.
+    // Response하는 결과는 onMessageReceived에서 처리한다.
     await stompClient.subscribe("/sub/chat/room/" + roomId, onMessageReceived);
 
-    // 서버에 userName을 가진 유저가 들어왔다는 것을 알림
-    // /pub/chat/enterUser 로 메시지를 보낸다.
-    await  stompClient.send("/pub/chat/enterUser",
+    // 사용자 입장
+    await stompClient.send("/pub/chat/enterUser",
         {},
         JSON.stringify(json))
     

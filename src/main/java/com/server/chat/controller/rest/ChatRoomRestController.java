@@ -21,9 +21,13 @@ public class ChatRoomRestController {
 
     private ChatRoomService chatRoomService;
 
-    // 채팅방 생성
+    /**
+     * @param name
+     * @return HttpStatus
+     * @desc 채팅방 생성 API
+     */
     @PostMapping
-    public ResponseEntity<?> create(@RequestParam String name) {
+    public ResponseEntity<Object> create(@RequestParam String name) {
 
         log.info("Create Chatting Room : {} ", name);
 

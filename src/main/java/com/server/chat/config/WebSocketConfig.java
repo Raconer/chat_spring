@@ -10,17 +10,20 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
+    /**
+     * @desc STOMP 접속 주소 url => /ws-stomp
+     */
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // TODO : STOMP 접속 주소 url => /ws-stomp
         registry.addEndpoint("/ws-stomp").withSockJS();
     }
 
+    /**
+     * @desc STOMP 접속 주소 url => /ws-stomp
+     */
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // TODO : 메시지 구독 요청 url -> 메시지 수신
-        registry.enableSimpleBroker("/sub");
-        // TODO : 메시지 발행 -> 메시지 송신
-        registry.setApplicationDestinationPrefixes("/pub");
+        registry.enableSimpleBroker("/sub"); // 메시지 구독 요청 url -> 메시지 수신
+        registry.setApplicationDestinationPrefixes("/pub"); // 메시지 발행 -> 메시지 송신
     }
 }

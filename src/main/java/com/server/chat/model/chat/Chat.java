@@ -1,4 +1,4 @@
-package com.server.chat.dto;
+package com.server.chat.model.chat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class ChatDTO {
-
+public class Chat {
     // ENTER/LEAVE 일때 -> 입장 퇴장 이벤트가 실행
     // TALK -> message를 해당 채팅방을 SUB 하고 있는 모든 클라이언트에게 전달
     public enum MessageType {
