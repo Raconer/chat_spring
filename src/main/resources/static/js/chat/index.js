@@ -25,6 +25,11 @@ async function connect(event) {
     let socket = new SockJS("/ws-stomp");
     stompClient = await Stomp.over(socket);
     // stompClient.debug = null;
+
+    
+    // stomp Client 접속
+    // onConnected : 채팅방 접근 및 접속 처리
+    // onError : STOMP 에러 발생시
     await stompClient.connect({}, onConnected, onError);
 
 }
