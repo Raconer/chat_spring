@@ -24,6 +24,7 @@ const roomId = url.get("id");
 async function connect(event) {
     let socket = new SockJS("/ws-stomp");
     stompClient = await Stomp.over(socket);
+    // 크롬 및 개발자 모드의 콘솔 추력 방지
     // stompClient.debug = null;
 
     
