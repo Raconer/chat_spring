@@ -1,5 +1,10 @@
 # 쓸만한 채팅 만들기
 
+## 블로그
+
+[채팅 만들기_1(basic)](https://donghokim.tistory.com/89)
+[채팅 만들기_2(chatting_room)](https://donghokim.tistory.com/90)
+
 ## 참고
 
 [Terian의 IT 도전기](https://terianp.tistory.com/146)
