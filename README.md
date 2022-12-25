@@ -17,6 +17,25 @@
 
 > Simple Text Oriented Messaging Protocol의 약자로 메시지 전송을 위한 프로토콜이다.
 
+### 화상 채팅 
+
+* 시그널링 서버
+  * 누구와 통신 하는지 파악하는 것을 돕는 서버
+* STUN 서버 & TURN 서버
+  * 서로가 어디에 있으며 어디로 통신 해야 하는지 알려주는 서버
+  * STUN 서버
+    * Session Traversal Uilities for NAT
+    * 클라이언트의 peer의 Public IP를 확인 하기 위해 STUN 서버에 요청을 보내고 서버로 부터 자신의 public IP를 받는다. 
+    이때 부터 클라이언트는 자신이 받은 public IP를 이용하여 시그널링 할떄 받은 정보를 이용해 시그널링한다.
+  * TURN 서버
+    * STUN 서버 만으로 IP를 정확하게 알기 힘들다
+    * 두 Client만으로 같은 네트워크에 존재 하고 있을때는 이것으로 해결되지 않은다.
+    * 따라서 public 망에 존재 하는 TURN 서버를 경유하여 통신하게 된다.
+    * 정확히는 클라이언트 자신의 private IP가 포함된 turn메시지를  turn 서버로 보낸다.
+    * 그러면 TURN 서버는 메세지에 포함된 NetWork Layer IP 주소와 Transport Layer의 UDP포트 넘버와의 차이를 확인하고 클라이언트의 PublicUP로 응답하게 된다.
+    * 이떄 NAT는 NAT 맵핑 테이블에 기록 되어 있는 정보에 따라서 내부 네트 워크에 있는 클라이언트의 Private IP로 메시지를 전송한다.
+* 미디어 서버
+
 #### WebSocket과 다른점
 
 > **WebSocket 특징**

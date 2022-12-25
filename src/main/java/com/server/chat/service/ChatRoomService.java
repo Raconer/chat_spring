@@ -26,6 +26,10 @@ public class ChatRoomService {
     }
 
     // READ
+    public Room findById(Integer id) {
+        return roomRepository.findById(id).orElse(null);
+    }
+
     // 전체 채팅방 조회
     public List<Room> findAllRoom() {
 

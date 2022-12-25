@@ -41,6 +41,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.4/sockjs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
     <script src="js/common/index.js" type="text/javascript" ></script>
-    <script src="js/chat/index.js" type="text/javascript" ></script>
+    <script src="js/chat/video.js" type="text/javascript" ></script>
   
 </html>

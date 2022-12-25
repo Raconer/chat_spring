@@ -31,4 +31,10 @@ public class MainController {
         return "chatRoom";
     }
 
+    @GetMapping("/video")
+    public String video(@RequestParam int id, Model model) {
+        log.info("Start Video : " + id);
+        return "video";
+    }
+
 }
