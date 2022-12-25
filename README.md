@@ -42,3 +42,23 @@
     implementation 'org.webjars:stomp-websocket:2.3.4'
 ```
 
+## 사용 SQL DDL
+
+> 테스트 용으로 만들다 보니 최대한 간략 하게 구성 하였습니다.
+
+```sql
+
+/* chatting db definition */
+CREATE DATABASE `chatting` 
+/*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+
+-- room definition
+CREATE TABLE `room` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `user_cnt` varchar(100) NOT NULL DEFAULT '0',
+  `reg_date` datetime NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+```
